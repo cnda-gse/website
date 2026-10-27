@@ -1,0 +1,20 @@
+# The URL the site will be built for
+base_url = "https://devon-shelton.com"
+title = "devon-shelton.com"
+
+taxonomies = [
+    { name = "categories", feed = true},
+]
+
+# Whether to automatically compile all Sass files in the sass directory
+compile_sass = true
+
+[markdown]
+render_emoji = true
+bottom_footnotes = true
+
+[markdown.highlighting]
+theme = "catppuccin-mocha"
+
+[extra]
+# Put all your custom variables here

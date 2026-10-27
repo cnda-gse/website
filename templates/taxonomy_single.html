@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title">Category: {{ term.name }}</h1>
+
+{% for post in term.pages %}
+  <div class="post">
+    <div>
+      <p><strong><a href="{{ post.permalink }}">{{ post.title }}</a></strong> - {{ post.date }}</p>
+    </div>
+    <div class="entry">
+      {{ post.summary | default(value=post.content | truncate(length=150)) | safe }}
+    </div>
+  </div>
+  <br>
+{% endfor %}
+
+{% endblock content %}

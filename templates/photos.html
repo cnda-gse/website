@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title">
+  {{ section.title }}
+</h1>
+
+{% set categories = get_taxonomy(kind="categories") %}
+
+{% for item in categories.items %}
+
+  <!-- Category Subheader -->
+  <h2>
+    {{ item.name }}</a> ({{ item.pages | length }})
+  </h2>
+
+  <!-- Loop through the posts specific to THIS category -->
+  {% for post in item.pages %}
+    <div class="post">
+      <div>
+        <!-- Note: Added the closing </p> tag here -->
+        <p><strong><a href="{{ post.permalink }}">{{ post.title }}</a></strong> - {{ post.date }}</p>
+      </div>
+      <div class="entry">
+        <!-- Show a summary if available, otherwise truncate the content -->
+        {{ post.summary | default(value=post.content | truncate(length=150)) | safe }}
+      </div>
+    </div>
+    <br>
+  {% endfor %}
+
+{% endfor %}
+
+{% endblock content %}

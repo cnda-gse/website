@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<html lang="">
+  <head>
+  <meta charset="utf-8">
+  <!-- Modern Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Libertinus+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Modern Math: KaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+
+  <link rel="stylesheet" href="{{ get_url(path='style.css', trailing_slash=false) }}">
+</head>
+  <body>
+    <div class="container">
+    <!-- top of the page links: -->
+      <div class="header">
+		<span class="logo">Δ</span> <a href="/">home</a>: <a href="/blog">blog</a> - <a href="/photos">photos</a> - <a href="#">profile</a>
+      </div>
+    <!-- left sidebar -->
+    <div class="left">
+        <div class="box">
+          <div class="boxwrap">
+            <div class="subtitle"><strong>{{ config.title }}</strong></div>
+            <a href="#">read my resume</a><br>
+            <a href="mailto:devon.shelton@protonmail.com">send me an email</a><br>
+<br>
+            <strong>site created</strong><br>2026-10-21
+          </div>
+        </div>
+        <div class="box">
+          <div class="boxwrap">
+            <div class="subtitle"><strong>other interesting pages</strong></div>
+            <a href="#">Subscribe to YOUR_USERNAME_HERE</a><br>
+          </div>
+        </div>
+    </div>
+    <!-- main content -->
+    <div class="content">
+        {% block content %} {% endblock content %}
+    </div>
+    <!-- footer -->
+    <div class="footer">
+      <a href="#">terms</a> - <a href="#">privacy</a> - <a href="#">about</a>
+      <br><br>
+      <a href="https://notbyai.fyi">
+        <img src="{{ get_url(path='assets/images/site/Created-By-a-Human-Not-By-AI-Badge-black.svg') }}" width="120">
+      </a>
+    </div>
+  </body>
+</html>
+
+
+
+<!-- Everything here goes inside of your <body></body> tags! -->
