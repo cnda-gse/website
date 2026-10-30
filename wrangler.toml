@@ -1,0 +1,8 @@
+name = "website"
+compatibility_date = "2026-10-27"
+
+[vars]
+ZOLA_VERSION = "0.23.5"
+
+[assets]
+directory = "./public"

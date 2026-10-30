@@ -4,6 +4,7 @@ date = "2026-10-21"
 
 [taxonomies]
 categories = ["meta"]
+
 +++
 
 After many scatterbrained attempts at creating a website with meaningful content between my many, *many* side projects, I am fairly certain this one will stick.
@@ -12,12 +13,14 @@ However, I can't seem to find anything to say despite the nagging sensation that
 
 Whatever it is, thanks for finding it. Glad to have you here, kind stranger.
 
-***But it's so old looking!***
+<hr />
+
+## The Vision
 
 Yes, it most likely is. I slapped it together in ~2 hours sitting in a library after lecture, and I will be tinkering with it for weeks until it's refined. I'm not a design student after all. But in the spirit of design:
 
-"10: Good design is as little design as possible."
-
--- *Dieter Ram*, Ten Principles for Good Design
+<blockquote><p>10: Good design is as little design as possible.</p>
+<footer> Dieter Ram, <em>Ten Principles for Good Design</em> </footer>
+</blockquote>
 
 Or, in cruder terms, **K**eep **I**t **S**imple, **S**tupid. Words to live by.

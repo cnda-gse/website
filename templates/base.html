@@ -3,54 +3,53 @@
 <html lang="">
   <head>
   <meta charset="utf-8">
-  <!-- Modern Font: Inter -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Libertinus+Sans:wght@400;700&display=swap" rel="stylesheet">
-
-  <!-- Modern Math: KaTeX -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
-
+  <link rel="stylesheet" href="https://unpkg.com/almond.css@latest/dist/almond.min.css" />
   <link rel="stylesheet" href="{{ get_url(path='style.css', trailing_slash=false) }}">
 </head>
   <body>
-    <div class="container">
-    <!-- top of the page links: -->
-      <div class="header">
-		<span class="logo">Δ</span> <a href="/">home</a>: <a href="/blog">blog</a> - <a href="/photos">photos</a> - <a href="#">profile</a>
-      </div>
-    <!-- left sidebar -->
-    <div class="left">
-        <div class="box">
-          <div class="boxwrap">
-            <div class="subtitle"><strong>{{ config.title }}</strong></div>
-            <a href="#">read my resume</a><br>
-            <a href="mailto:devon.shelton@protonmail.com">send me an email</a><br>
-<br>
-            <strong>site created</strong><br>2026-10-21
-          </div>
-        </div>
-        <div class="box">
-          <div class="boxwrap">
-            <div class="subtitle"><strong>other interesting pages</strong></div>
-            <a href="#">Subscribe to YOUR_USERNAME_HERE</a><br>
-          </div>
-        </div>
-    </div>
-    <!-- main content -->
-    <div class="content">
-        {% block content %} {% endblock content %}
-    </div>
-    <!-- footer -->
-    <div class="footer">
-      <a href="#">terms</a> - <a href="#">privacy</a> - <a href="#">about</a>
+  <nav class="main-menu">
+    <figure style="display: block; margin: 0.5em auto 0.5em auto; background: none; border: none;">
+    <a href="/">
+      <img src="{{ get_url(path='assets/images/site/IMG_8943_modified_tiny_dithered.png') }}" width="160" style="border: 1px solid black;">
+      </a>
+      <figcaption style="padding: 0 0 0 0;">est 2026-10-21</figcaption>
+      </figure>
+      <h2>sitemap</h2>
+      <a href="/blog">blog</a> - <a href="/photos">photos</a> - <a href="/profile">profile</a>
+      <br><br>
+      <ul>
+        <li>
+          <div>personal</div>
+          </li><li><a href="#">read my resume</a></li>
+          <li><a href="mailto:devon.shelton@protonmail.com">send me an email</a></li>
+        <li>
+          <div>other interesting pages</div>
+          </li><li><a href="https://xkcd.com/">xkcd</a></li>
+          <li><a href="https://www.smbc-comics.com/">SMBC</a></li>
+        <br><br><br>
+        <div>
+        <a href="#">terms</a> - <a href="#">privacy</a> - <a href="#">about</a>
       <br><br>
       <a href="https://notbyai.fyi">
-        <img src="{{ get_url(path='assets/images/site/Created-By-a-Human-Not-By-AI-Badge-black.svg') }}" width="120">
-      </a>
+        <img src="{{ get_url(path='assets/images/site/Created-By-a-Human-Not-By-AI-Badge-black.svg') }}" width="160">
+      </a></div>
+
+    </nav>
+    <div>
+    <header>
+        <div>
+          <h1><span style="line-height: 1; font-size: 18px;"><pre>
+┏━ ┏━┛┃ ┃┏━┃┏━   ┏━┛┃ ┃┏━┛┃  ━┏┛┏━┃┏━  ┏━┛┏━┃┏┏
+┃ ┃┏━┛┃ ┃┃ ┃┃ ┃━┛━━┃┏━┃┏━┛┃   ┃ ┃ ┃┃ ┃ ┃  ┃ ┃┃┃┃
+━━ ━━┛ ┛ ━━┛┛ ┛  ━━┛┛ ┛━━┛━━┛ ┛ ━━┛┛ ┛┛━━┛━━┛┛┛┛</pre></span></h1>
+          <p>A Blog About Geese and Whatever Else</p>
+        </div>
+      </header>
+    <main id="main">
+        {% block content %} {% endblock content %}
+      </main>
     </div>
+
   </body>
 </html>
 
