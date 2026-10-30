@@ -1,0 +1,12 @@
+# Cloudflare Pages custom headers
+# Aggressive caching for static assets (fonts, images)
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Stylesheet caching with revalidation
+/style.css
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+# Ensure HTML always checks for fresh content
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate

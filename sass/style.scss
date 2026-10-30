@@ -1,3 +1,21 @@
+@font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url("/assets/fonts/Inter-Variable.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "Inter";
+    font-style: italic;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url("/assets/fonts/Inter-Italic-Variable.woff2") format("woff2");
+}
+
+@import "almond";
+
 :root {
     --primaryH: 360;
     --primaryS: 100%;
@@ -7,7 +25,7 @@
     --secondaryS: 0%;
     --secondaryL: 13%;
     --secondary-bg: #ffffff;
-    --font-family: Inter;
+    --font-family: Inter, sans-serif;
     --font-size-root: 16px;
     --font-weight-thin: 200;
     --font-weight-normal: 400;
@@ -46,9 +64,7 @@ header p {
 
 main {
     max-width: 1000px;
-    margin: auto auto;
-    align-items: left;
-    justify-content: left;
+    margin: auto auto auto 1em;
 }
 
 .flex {
