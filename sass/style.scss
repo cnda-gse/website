@@ -172,3 +172,43 @@ table code {
     }
 }
 
+/* Photo gallery styling */
+.photo-entry {
+    margin-bottom: 2.5rem;
+}
+
+.photo-frame {
+    margin-bottom: 0.5rem;
+}
+
+.photo-frame a {
+    display: block;
+    text-decoration: none;
+    line-height: 0;
+}
+
+.photo-frame img {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--secondary-light);
+    box-sizing: border-box;
+}
+
+.photo-info {
+    margin-top: 0.5rem;
+}
+
+.photo-info p {
+    margin: 0.2rem 0;
+    line-height: 1.4;
+}
+
+.photo-meta {
+    font-size: 0.85rem;
+    color: hsl(var(--secondaryH), var(--secondaryS), 40%);
+}
+
+

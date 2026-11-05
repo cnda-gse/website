@@ -1,0 +1,12 @@
+# Zola binary
+zola
+zola-*.tar.gz
+
+# Cache
+.photo_cache.json
+
+# Raw local photos (keep directory structure and readme)
+photos_raw/*
+!photos_raw/.gitkeep
+!photos_raw/README.md
+!photos_raw/metadata.json
