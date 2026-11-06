@@ -4,10 +4,21 @@ process_photos.py - Pre-push photo optimization and gallery generator for Zola.
 
 Converts local photos in `photos_raw/` into 1200px wide, 50% compressed .AVIF images,
 extracts title, date, and camera EXIF metadata, and generates `content/photos/index.md`
-organized by category with markdown headings matching the blog page format.
+organized by category and subcategory with markdown headings matching the blog format.
+
+Folder structure supported:
+    photos_raw/<category>/<subcategory>/<image_file>
+        e.g., photos_raw/other birds/branta canadensis/goose.jpg
+        e.g., photos_raw/plants/taraxacum officinale/flower.jpg
+    photos_raw/<category>/<image_file>
+        e.g., photos_raw/geese/goose.jpg
+    photos_raw/<image_file>
+        (defaults to category 'general')
 
 Usage:
     python3 scripts/process_photos.py [options]
+    or
+    ./process_photos.sh [options]
 
 Options:
     -i, --input DIR       Source directory for raw photos (default: photos_raw)
@@ -148,7 +159,7 @@ def parse_photo_metadata(file_path: Path, manual_overrides: dict = None) -> dict
     # 3. Camera Make and Model
     make = (manual.get('make') or raw_data.get('Make') or '').strip()
     model = (manual.get('model') or manual.get('camera') or raw_data.get('Model') or '').strip()
-    
+
     # Normalize known camera brands
     make_clean = make.title() if make.isupper() else make
     if make_clean and model:
@@ -225,7 +236,8 @@ def parse_photo_metadata(file_path: Path, manual_overrides: dict = None) -> dict
         'lens': lens,
         'specs': specs,
         'specs_str': specs_str,
-        'category': manual.get('category')
+        'category': manual.get('category'),
+        'subcategory': manual.get('subcategory')
     }
 
 
@@ -283,10 +295,35 @@ def save_cache(cache_file: Path, cache: dict):
         print(f"[!] Warning: Could not save cache: {e}")
 
 
+def _append_photo_entry(lines: list, photo: dict):
+    """Append HTML snippet for a single photo entry."""
+    img_url = photo['web_path']
+    title = photo['title']
+    date = photo['date']
+    specs_str = photo['specs_str']
+
+    lines.append('<div class="photo-entry">')
+    lines.append('  <div class="photo-frame">')
+    lines.append(f'    <a href="{img_url}" target="_blank" rel="noopener">')
+    lines.append(f'      <img src="{img_url}" alt="{title}" width="1200" loading="lazy">')
+    lines.append('    </a>')
+    lines.append('  </div>')
+    lines.append('  <div class="photo-info">')
+    lines.append(f'    <p><strong>{title}</strong> - {date}</p>')
+    if specs_str:
+        lines.append(f'    <p class="photo-meta">{specs_str}</p>')
+    lines.append('  </div>')
+    lines.append('</div>')
+    lines.append("<br>")
+    lines.append("")
+
+
 def generate_markdown(categories_data: dict, output_file: Path):
     """
     Generate the Zola content/photos/index.md page replicating the blog format:
-    Headings: `### category (count)`
+    Headings:
+      `### category (total_count)`
+      `#### subcategory (sub_count)` (if subcategory present)
     Items: Image + `<p><strong>Title</strong> - Date</p>` + metadata caption.
     """
     lines = [
@@ -296,55 +333,70 @@ def generate_markdown(categories_data: dict, output_file: Path):
         'template = "page.html"',
         "",
         "[extra]",
-        "display_toc = false",
+        "display_toc = true",
         "+++",
         ""
     ]
 
-    total_photos = sum(len(photos) for photos in categories_data.values())
+    total_photos = sum(
+        len(c['direct_photos']) + sum(len(s['photos']) for s in c['subcategories'].values())
+        for c in categories_data.values()
+    )
 
     if total_photos == 0:
         lines.append("No photos have been added yet.")
         lines.append("")
         lines.append(
-            "To add photos, place images into `photos_raw/` (or subdirectories like `photos_raw/wildlife/`) "
+            "To add photos, place images into `photos_raw/` (e.g. `photos_raw/other birds/branta canadensis/`) "
             "and run `./process_photos.sh` before pushing."
         )
     else:
-        # Sort categories alphabetically
-        sorted_categories = sorted(categories_data.keys())
-        for category in sorted_categories:
-            photos = categories_data[category]
-            if not photos:
+        # Sort categories alphabetically by name
+        sorted_category_keys = sorted(
+            categories_data.keys(),
+            key=lambda k: categories_data[k]['name'].lower()
+        )
+
+        for cat_key in sorted_category_keys:
+            cat_info = categories_data[cat_key]
+            cat_name = cat_info['name']
+            direct_photos = cat_info['direct_photos']
+            subcategories = cat_info['subcategories']
+
+            total_cat_photos = len(direct_photos) + sum(len(s['photos']) for s in subcategories.values())
+            if total_cat_photos == 0:
                 continue
 
-            # Sort photos by date descending (newest first)
-            photos.sort(key=lambda p: (p['date'], p['title']), reverse=True)
-
-            # Category heading replicating blog page format: ### category_name (count)
-            lines.append(f"### {category} ({len(photos)})")
+            # Category Heading (Level 1: ### category (count))
+            lines.append(f"### {cat_name} ({total_cat_photos})")
             lines.append("")
 
-            for p in photos:
-                img_url = p['web_path']
-                title = p['title']
-                date = p['date']
-                specs_str = p['specs_str']
+            # Render direct photos in this category (if any)
+            if direct_photos:
+                direct_photos.sort(key=lambda p: (p['date'], p['title']), reverse=True)
+                for p in direct_photos:
+                    _append_photo_entry(lines, p)
 
-                lines.append('<div class="photo-entry">')
-                lines.append('  <div class="photo-frame">')
-                lines.append(f'    <a href="{img_url}" target="_blank" rel="noopener">')
-                lines.append(f'      <img src="{img_url}" alt="{title}" width="1200" loading="lazy">')
-                lines.append('    </a>')
-                lines.append('  </div>')
-                lines.append('  <div class="photo-info">')
-                lines.append(f'    <p><strong>{title}</strong> - {date}</p>')
-                if specs_str:
-                    lines.append(f'    <p class="photo-meta">{specs_str}</p>')
-                lines.append('  </div>')
-                lines.append('</div>')
-                lines.append("<br>")
-                lines.append("")
+            # Render subcategories (Level 2: #### subcategory (count))
+            if subcategories:
+                sorted_sub_keys = sorted(
+                    subcategories.keys(),
+                    key=lambda k: subcategories[k]['name'].lower()
+                )
+                for sub_key in sorted_sub_keys:
+                    sub_info = subcategories[sub_key]
+                    sub_name = sub_info['name']
+                    sub_photos = sub_info['photos']
+                    if not sub_photos:
+                        continue
+
+                    # Subcategory heading
+                    lines.append(f"#### {sub_name} ({len(sub_photos)})")
+                    lines.append("")
+
+                    sub_photos.sort(key=lambda p: (p['date'], p['title']), reverse=True)
+                    for p in sub_photos:
+                        _append_photo_entry(lines, p)
 
     content = "\n".join(lines).strip() + "\n"
     output_file.parent.mkdir(parents=True, exist_ok=True)
@@ -440,10 +492,11 @@ def main():
             readme.write_text(
                 "# photos_raw\n\n"
                 "Place your high-resolution photos here.\n"
-                "You can organize them into category subfolders, for example:\n"
-                "- `photos_raw/wildlife/my_photo.jpg`\n"
-                "- `photos_raw/travel/scenery.png`\n\n"
-                "Photos placed directly in `photos_raw/` will be placed under the 'general' category.\n"
+                "You can organize them into categories and subcategories, for example:\n"
+                "- `photos_raw/other birds/branta canadensis/goose.jpg`\n"
+                "- `photos_raw/plants/taraxacum officinale/flower.jpg`\n"
+                "- `photos_raw/geese/goose.jpg`\n"
+                "- `photos_raw/photo.jpg` (falls under 'general')\n"
             )
 
     manual_meta = load_manual_metadata(input_dir)
@@ -464,27 +517,54 @@ def main():
 
     for file_path in sorted(found_files):
         rel_to_input = file_path.relative_to(input_dir)
-        # Determine category: subfolder name or 'general'
         parts = rel_to_input.parts
-        if len(parts) > 1:
-            category_name = slugify(parts[0])
+
+        # Detect category and subcategory from path
+        if len(parts) == 2:
+            # photos_raw/<category>/photo.jpg
+            category_raw = parts[0]
+            subcategory_raw = None
+        elif len(parts) >= 3:
+            # photos_raw/<category>/<subcategory>/.../photo.jpg
+            category_raw = parts[0]
+            subcategory_raw = parts[1]
         else:
-            category_name = "general"
+            # photos_raw/photo.jpg
+            category_raw = "general"
+            subcategory_raw = None
 
         # Check manual metadata overrides
         file_key = str(rel_to_input)
         override = manual_meta.get(file_key) or manual_meta.get(file_path.name) or {}
         if override.get('category'):
-            category_name = slugify(override['category'])
+            category_raw = override['category']
+        if 'subcategory' in override:
+            subcategory_raw = override['subcategory']
 
         meta = parse_photo_metadata(file_path, override)
         if override.get('category'):
-            category_name = slugify(override['category'])
+            category_raw = override['category']
+        if 'subcategory' in override:
+            subcategory_raw = override['subcategory']
+
+        category_slug = slugify(category_raw)
+        category_display = category_raw.replace('_', ' ').strip()
+
+        if subcategory_raw:
+            subcategory_slug = slugify(subcategory_raw)
+            subcategory_display = subcategory_raw.replace('_', ' ').strip()
+        else:
+            subcategory_slug = None
+            subcategory_display = None
 
         # Destination filename & path
         dest_filename = f"{slugify(file_path.stem)}.avif"
-        dest_path = output_dir / category_name / dest_filename
-        web_path = f"/assets/images/photos/{category_name}/{dest_filename}"
+        if subcategory_slug:
+            dest_path = output_dir / category_slug / subcategory_slug / dest_filename
+            web_path = f"/assets/images/photos/{category_slug}/{subcategory_slug}/{dest_filename}"
+        else:
+            dest_path = output_dir / category_slug / dest_filename
+            web_path = f"/assets/images/photos/{category_slug}/{dest_filename}"
 
         # Change detection with hash and mtime
         file_hash = get_file_hash(file_path)
@@ -513,7 +593,14 @@ def main():
             'mtime': os.path.getmtime(file_path)
         }
 
-        # Add to category collection
+        # Store in categories_data
+        if category_slug not in categories_data:
+            categories_data[category_slug] = {
+                'name': category_display,
+                'direct_photos': [],
+                'subcategories': {}
+            }
+
         photo_info = {
             'title': meta['title'],
             'date': meta['date'],
@@ -521,14 +608,25 @@ def main():
             'web_path': web_path,
             'dest_path': dest_path
         }
-        categories_data.setdefault(category_name, []).append(photo_info)
+
+        if subcategory_slug:
+            if subcategory_slug not in categories_data[category_slug]['subcategories']:
+                categories_data[category_slug]['subcategories'][subcategory_slug] = {
+                    'name': subcategory_display,
+                    'photos': []
+                }
+            categories_data[category_slug]['subcategories'][subcategory_slug]['photos'].append(photo_info)
+        else:
+            categories_data[category_slug]['direct_photos'].append(photo_info)
 
     save_cache(cache_file, new_cache)
 
+    total_subcategories = sum(len(c['subcategories']) for c in categories_data.values())
     print(f"\nProcessing Summary:")
     print(f"  Converted: {converted_count}")
     print(f"  Cached/Unchanged: {cached_count}")
-    print(f"  Total Categories: {len(categories_data)}")
+    print(f"  Top Categories: {len(categories_data)}")
+    print(f"  Subcategories:  {total_subcategories}")
 
     # Generate content/photos/index.md
     print(f"\nWriting gallery page to: {content_file.relative_to(repo_root)}")

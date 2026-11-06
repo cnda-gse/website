@@ -1,34 +1,50 @@
-# Raw photos input directory
-# Place local photos here before running `./process_photos.sh`
+# Raw Photos Input Directory
 
-You can organize photos by category into subfolders:
-- `photos_raw/wildlife/my_goose.jpg` -> appears under `### wildlife` heading
-- `photos_raw/travel/paris.jpg`      -> appears under `### travel` heading
-- `photos_raw/photo.jpg`             -> appears under `### general` heading
+Place your local photos here before running `./process_photos.sh`.
 
-Supported formats: JPG, PNG, WEBP, TIFF, HEIC, AVIF, RAW (CR2, NEF, ARW, DNG, etc.)
+### Directory & Category Structure
 
-When you run `./process_photos.sh` before pushing to GitHub:
-1. Photos are resized to 1200px wide and compressed into 50% quality .AVIF files.
-2. Saved to `static/assets/images/photos/<category>/`.
-3. EXIF metadata (title, date, camera, lens, focal length, aperture, shutter speed, ISO) is extracted.
-4. `content/photos/index.md` is updated with categories matching the blog page structure.
-5. `zola build` compiles the site and updates `public/`.
+You can organize photos using 1 or 2 levels of categories:
 
-### Optional Manual Metadata
-If you have photos that don't have EXIF metadata or you want custom titles/dates, you can create a `metadata.json` in this folder:
-```json
-{
-  "my_photo.jpg": {
-    "title": "Canada Goose at Sunset",
-    "date": "2026-10-24",
-    "category": "wildlife",
-    "camera": "Sony A7 IV",
-    "lens": "FE 24-70mm F2.8 GM",
-    "focal_length": "50mm",
-    "aperture": "f/2.8",
-    "shutter_speed": "1/500s",
-    "iso": "ISO 100"
-  }
-}
+#### 1. Two Levels: `category -> subcategory (latin name or species)`
 ```
+photos_raw/
+├── other birds/
+│   ├── branta canadensis/
+│   │   └── goose.jpg
+│   └── junco hyemalis/
+│       └── junco.cr2
+└── plants/
+    └── hydrangea quercifolia/
+        └── oakleaf.jpg
+```
+On the photos page, this renders as:
+- `### other birds (2)`
+  - `#### branta canadensis (1)`
+  - `#### junco hyemalis (1)`
+- `### plants (1)`
+  - `#### hydrangea quercifolia (1)`
+
+#### 2. Single Level: `category` only
+```
+photos_raw/
+└── infrastructure/
+    └── insulators_and_taps.cr2
+```
+Renders directly as:
+- `### infrastructure (1)`
+
+#### 3. Root Level: `photos_raw/<image>`
+Photos placed directly in `photos_raw/` fall under the `general` category heading.
+
+---
+
+### How to Run
+
+Before pushing to GitHub, run:
+```bash
+./process_photos.sh
+```
+
+Supported formats: JPG, PNG, WEBP, TIFF, HEIC, AVIF, and Camera RAW (CR2, NEF, ARW, DNG, etc.).
+Photos are converted to 1200px wide, 50% compressed .AVIF images, metadata is extracted, and `zola build` is executed.
